@@ -1,0 +1,26 @@
+import os
+import os.path
+ 
+ class MapillaryAuth:
+    def __init__(self):
+        self.configDir = "~/.mapillary"
+        self.configFile = os.path.join(self.configDir, "app_auth.txt")
+        self.readConfig()
+        self.values = {}
+    def readConfig(self):
+        config = None
+        with open(self.configFile, 'r') as f:
+            config = gpxpy.parse(f)
+        if config == None:
+            raise "Failed to read config from '%s'." % self.configFile
+            
+        self.values = {}
+        for line in config.splitlines():
+            line = line.strip()
+            if len(line) == 0 or line.find("#") == 0:
+                continue
+            if line.find("=") == -1:
+                raise "Line in '%s' does not contain a =" % self.configFile
+            (key, value) = line.split("=")
+            self.values[key] = value
+            
