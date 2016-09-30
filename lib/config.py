@@ -3,7 +3,7 @@ import os.path
  
 class MapillaryConfig:
     def __init__(self):
-        self.configDir = "~/.mapillary"
+        self.configDir = os.path.join(os.path.expanduser('~'), '.mapillary')
         self.config_file = os.path.join(self.configDir, "config.txt")
         self.values = {}
     

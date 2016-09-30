@@ -9,11 +9,6 @@ try:
 except ImportError:
     print("gpxpy not found - please run: pip install gpxpy")
     sys.exit()
-try:
-    import requests
-except ImportError:
-    print("requests not found - please run: pip install gpxpy")
-    sys.exit()
 
 class GpxClean:
     def __init__(self, gpx_file):
@@ -26,7 +21,8 @@ class GpxClean:
 
     def calculate_mean_speed(self, segment):
         # At i = 0 None is returned instead of a number: Ignore that.
-        return self.mean([segment.get_speed(i) for i in range(1, segment.get_points_no())])
+        speeds = [segment.get_speed(i) for i in range(1, segment.get_points_no())]
+        return self.mean([s for s in speeds if s != None])
 
     def open(self, gpx_file):
         with open(gpx_file, 'r') as f:
