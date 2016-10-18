@@ -38,14 +38,37 @@ class GpxClean:
                     mean_speed = self.calculate_mean_speed(segment)
                     i = 0
                     while i < segment.get_points_no():
-                        if segment.get_speed(i) > mean_speed * self.speed_factor:
+                        next_speed = self.get_speed_to_next(segment, i)
+                        prev_speed = self.get_speed_to_prev(segment, i)
+                        # Remove points that have too high speed to both sides.
+                        if self.is_speed_too_great(mean_speed, next_speed) and self.is_speed_too_great(mean_speed, prev_speed):
                             removed_points.append(segment.points[i])
                             segment.remove_point(i)
                             anything_removed = True
                         else:
                             i += 1
         return removed_points
+    def is_speed_too_great(self, mean_speed, speed):
+        """ Returns if the given speed is "too great" with regard to the given mean speed and other factors.
+        If speed is None when True is returned. This allows for easy handling of first and last point.
+        If these are handled separately, this behavior should be changed.
+        """
+        return speed == None or abs(speed) > abs(mean_speed * self.speed_factor)
         
+    def get_speed_to_next(self, segment, point_no):
+        if point_no == len(segment.points) - 1:
+            return None
+        
+        next_point = segment.points[point_no + 1]
+        return segment.points[point_no].speed_between(next_point)
+
+    def get_speed_to_prev(self, segment, point_no):
+        if point_no == 0:
+            return None
+        
+        prev_point = segment.points[point_no - 1]
+        return segment.points[point_no].speed_between(prev_point)
+
     def save_file(self, file):
         fp = open(file, 'w')
         fp.write(self.gpx.to_xml())
